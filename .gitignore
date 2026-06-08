@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+# Ignore loose save files in the repo root, but keep the committed test fixtures
+# under tests/fixtures/ (they are required to run the suite).
+/*.gci
