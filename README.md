@@ -47,7 +47,7 @@ Category keys: `cards`, `story_missions`, `bonus_missions`, `street_races`, `mov
 | Street races | 21 | by slot |
 | Movies (FMVs) | 7 | by level |
 | Wasp cameras | 140 | by index |
-| Gags | 84 | by index |
+| Gags | 84 | by name |
 | Outfits | 21 | count only |
 | Vehicles | 35 | count only |
 
@@ -66,9 +66,10 @@ completion definition.
   from a canonical table in `shar_checklist/names.py` — edit that file to fix a name or
   adjust a total.
 - Cards, missions, races, movies, **gags**, and **wasp cameras** are reported per item.
-  Gags use the save's `GagMask` bitmask; wasp cameras use the per-object destruction state
-  in `PersistentObjectStates` (the same data that stops them respawning on load), labelled
-  by 1-based index within the level since the game stores no per-item names for them.
+  Gags use the save's `GagMask` bitmask, named from each level's `level.mfk` script (the
+  game assigns gag bit `N` to the `N`-th persistent gag defined in the script). Wasp cameras
+  use the per-object destruction state in `PersistentObjectStates` (the same data that stops
+  them respawning on load), labelled by 1-based index since they have no script names.
 - Outfits are count-only per level (`NumSkinsPurchased`). Vehicles use the game's own
   per-level metric — purchased cars + the bonus-mission reward + the street-race reward,
   5 per level (35 total) — not the raw global car inventory.

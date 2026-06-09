@@ -218,10 +218,10 @@ def compute_checklist(save: SaveData) -> ChecklistResult:
             "gags",
             "Gags",
             levels,
-            # GagMask is a per-gag bitmask: bit i == gag i collected. The save has no gag
-            # display names, so we label by 1-based index (matches the in-game gag order).
+            # GagMask is a per-gag bitmask: bit i == gag i collected. Bit order matches the
+            # gag definition order in the level scripts, so names come straight from there.
             is_done=lambda level, slot, lvl: bool(level.gag_mask & (1 << slot)),
-            name_for=lambda lvl: [f"Gag {i + 1}" for i in range(names.GAGS_PER_LEVEL[lvl])],
+            name_for=lambda lvl: names.GAG_NAMES[lvl],
         ),
         _count_category(
             "outfits",

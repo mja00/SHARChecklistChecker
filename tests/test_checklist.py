@@ -66,14 +66,25 @@ def test_early_save_counts():
     assert 0 < result.percent < 20
 
 
-def test_gags_missing_by_index():
-    # L1 GagMask 0x369F -> bits {0,1,2,3,4,7,9,10,12,13} set of 15 gags, so gags
-    # 6, 7, 9, 12, 15 (1-based) are missing.
+def test_gags_missing_by_name():
+    # L1 GagMask 0x369F -> bits {0,1,2,3,4,7,9,10,12,13} set of 15 gags, so the missing
+    # bits are {5,6,8,11,14}, which map to these named gags (from the level scripts).
+    from shar_checklist import names
+
     result = _result("sample_early.gci")
     gags = next(c for c in result.categories if c.key == "gags")
     assert gags.done == 10
     l1_missing = [m for m in gags.missing if m.startswith("Level 1")]
-    assert sorted(l1_missing) == sorted(f"Level 1 - Homer - Gag {n}" for n in (6, 7, 9, 12, 15))
+    expected = [f"Level 1 - Homer - {names.GAG_NAMES[0][b]}" for b in (5, 6, 8, 11, 14)]
+    assert sorted(l1_missing) == sorted(expected)
+    assert "Jasper in the Freezer" in " ".join(l1_missing)
+
+
+def test_gag_names_count_matches_totals():
+    from shar_checklist import names
+
+    assert [len(g) for g in names.GAG_NAMES] == names.GAGS_PER_LEVEL
+    assert sum(names.GAGS_PER_LEVEL) == 84
 
 
 def test_missing_items_use_canonical_names_not_save_placeholders():

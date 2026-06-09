@@ -171,8 +171,120 @@ CARD_NAMES = [
     ],
 ]
 
+# Gag names per level, in GagMask bit order. Each level's `level.mfk` defines its gags
+# with GagBegin/GagSetPersist(1); the game assigns each persistent gag the next bit index
+# (sPersistGagIndex++), so the Nth GagSetPersist(1) gag in the script == GagMask bit N.
+# Names are the descriptive comments from those scripts (84 total: 15/11/11/15/6/11/15).
+GAG_NAMES = [
+    # Level 1 (15 gags)
+    [
+        "Barbeque",
+        "Poison gas",
+        "Flander's bomb shelter",
+        "SwingSet in Homer's Yard",
+        "SwingSet in Park",
+        "Squishee Machine in KwikEMart",
+        "Jasper in the Freezer",
+        "ATM bank machine",
+        "TV in Simpsons House",
+        "Aztec fire",
+        "PowerPlant Melt Down",
+        "Dead fire extinguisher",
+        "Fire Alarm",
+        "Larry The Looter FMV",
+        "Silent Alarm in the Kwik E Mart",
+    ],
+    # Level 2 (11 gags)
+    [
+        "Pickle Jar",
+        "Flaming Moe",
+        "Love tester",
+        "Slot Machine",
+        "Catapult Launching",
+        "Fat Tony's Construction",
+        "Herman's bomb",
+        "Rat Milker Machine",
+        "Exploding Car outside Try 'n Save",
+        "Moleman Get picture taken in DMV",
+        "Level 2 Dumpster",
+    ],
+    # Level 3 (11 gags)
+    [
+        "Radioactiveman",
+        "Clank Clank robot",
+        "Kamp krusty flag",
+        "Kamp krusty pig on a stick",
+        "Silent alarm in observ",
+        "Matter transporter",
+        "Perpetual motion machine",
+        "Crane That Spills HotPants",
+        "Kids in the Wally Weazles Ball Room",
+        "Observatory Video in telescope",
+        "Level 3 Dumpster",
+    ],
+    # Level 4 (15 gags)
+    [
+        "Barbeque",
+        "Poison gas",
+        "Flander's bomb shelter",
+        "SwingSet in Homer's Yard",
+        "Squishee Machine in KwikEMart",
+        "Jasper in the Freezer",
+        "ATM bank machine",
+        "TV in Simpsons House",
+        "Aztec fire",
+        "PowerPlant Melt Down",
+        "Dead fire extinguisher",
+        "Fire Alarm",
+        "Exploding Lamp in Barts Room",
+        "Larry The Looter FMV",
+        "Silent Alarm in the Kwik E Mart",
+    ],
+    # Level 5 (6 gags)
+    [
+        "Pickle Jar",
+        "Flaming Moe",
+        "Love tester",
+        "Slot Machine",
+        "Moleman Get picture taken in DMV",
+        "Level 5 Dumpster",
+    ],
+    # Level 6 (11 gags)
+    [
+        "Radioactiveman",
+        "Clank Clank robot",
+        "Kamp krusty flag",
+        "Kamp krusty pig on a stick",
+        "Silent alarm in observ",
+        "Matter transporter",
+        "Perpetual motion machine",
+        "Crane That Spills HotPants",
+        "Kids in the Wally Weazles Ball Room",
+        "Observatory Video in telescope",
+        "Level 6 Dumpster",
+    ],
+    # Level 7 (15 gags)
+    [
+        "Poison gas",
+        "SwingSet in Homer's Yard",
+        "SwingSet in Park",
+        "Squishee Machine in KwikEMart",
+        "Jasper in the Freezer",
+        "ATM bank machine",
+        "TV in Simpsons House",
+        "Aztec fire",
+        "Dead fire extinguisher",
+        "Fire Alarm",
+        "Larry The Looter FMV",
+        "Silent Alarm in the Kwik E Mart",
+        "Exploding Lamp in Barts Room",
+        "Scarry Clown Bed in Barts Room",
+        "Flander's bomb shelter",
+    ],
+]
+
 # Per-level counts for count-only categories.
-GAGS_PER_LEVEL = [15, 11, 11, 15, 6, 11, 15]  # sums to 84
+GAGS_PER_LEVEL = [len(level) for level in GAG_NAMES]  # 15/11/11/15/6/11/15 = 84
 WASPS_PER_LEVEL = [20] * 7  # 140 total
 OUTFITS_PER_LEVEL = [3] * 7  # 21 total
 
