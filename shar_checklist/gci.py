@@ -13,18 +13,23 @@ misaligned data.
 
 from __future__ import annotations
 
-from .errors import InvalidSaveError, UnsupportedRegionError
+from .errors import InvalidSaveError
 
 # SHAR GameCube game codes: "GHQ" + region byte.
 SHAR_GAME_PREFIX = b"GHQ"
 REGION_NAMES = {ord("E"): "NTSC-U (USA)", ord("P"): "PAL (Europe)", ord("J"): "NTSC-J (Japan)"}
-SUPPORTED_REGION = ord("E")
 
 # Sizes of the flat CharacterSheet, derived from SHARMemory's struct definitions.
 PLAYER_NAME_SIZE = 16
 LEVEL_RECORD_SIZE = 620
 MAX_LEVELS = 7
 CHARACTER_SHEET_SIZE = 7137  # name(16) + 7*620 + globals; see parser for the field walk.
+
+# The CharacterSheet is preceded by a 16-byte SaveGameInfo header whose first two bytes are
+# a magic number (game source: savegameinfo.cpp). It's a distinctive anchor for locating
+# the payload regardless of the preceding banner/icon size (which varies by region).
+SAVE_INFO_SIZE = 16
+SAVE_INFO_MAGIC = b"\xba\x07"
 
 # Observed payload offset for single-slot NTSC-U saves. Used as the primary guess; the
 # real location is always confirmed by sentinel validation below.
@@ -43,8 +48,11 @@ def _player_name_looks_valid(window: bytes) -> bool:
 
 
 def _sentinel_ok(data: bytes, offset: int) -> bool:
-    """A located CharacterSheet must fit and have a sane player name + current mission."""
-    if offset < 0 or offset + CHARACTER_SHEET_SIZE > len(data):
+    """A located CharacterSheet must be anchored by the SaveGameInfo magic and have a sane
+    player name + current mission."""
+    if offset < SAVE_INFO_SIZE or offset + CHARACTER_SHEET_SIZE > len(data):
+        return False
+    if data[offset - SAVE_INFO_SIZE : offset - SAVE_INFO_SIZE + 2] != SAVE_INFO_MAGIC:
         return False
     if not _player_name_looks_valid(data[offset : offset + PLAYER_NAME_SIZE]):
         return False
@@ -56,19 +64,15 @@ def _sentinel_ok(data: bytes, offset: int) -> bool:
 
 
 def validate_region(data: bytes) -> None:
-    """Raise if this isn't a SHAR save, or is a SHAR save for an unsupported region."""
+    """Raise if this isn't a SHAR GameCube save. All GC regions (GHQE/GHQP/GHQJ) share the
+    same CharacterSheet layout (game source), so any GHQ* save is accepted; the payload is
+    located by the SaveGameInfo magic, which absorbs the region-specific banner/icon size."""
     if len(data) < 64:
         raise InvalidSaveError("file is too small to be a GameCube .gci save")
     code = data[0:4]
     if code[0:3] != SHAR_GAME_PREFIX:
         raise InvalidSaveError(
             f"not a Simpsons: Hit & Run save (game code {code!r}, expected GHQ*)"
-        )
-    region = code[3]
-    if region != SUPPORTED_REGION:
-        name = REGION_NAMES.get(region, f"unknown (0x{region:02X})")
-        raise UnsupportedRegionError(
-            f"this save is the {name} region; only NTSC-U (GHQE) is supported in v1"
         )
 
 

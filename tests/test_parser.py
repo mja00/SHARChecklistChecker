@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from shar_checklist.errors import InvalidSaveError, UnsupportedRegionError
+from shar_checklist.errors import InvalidSaveError
 from shar_checklist.gci import extract_character_sheet, read_gci
 from shar_checklist.parser import parse_character_sheet
 
@@ -84,10 +84,11 @@ def _patched(offset: int, value: int) -> bytes:
     return bytes(data)
 
 
-def test_rejects_pal_region():
-    # Change region byte (offset 3) from 'E' to 'P'.
-    with pytest.raises(UnsupportedRegionError):
-        extract_character_sheet(_patched(3, ord("P")))
+def test_accepts_other_gc_region():
+    # All GameCube regions share the CharacterSheet layout, so flipping the region byte
+    # (E -> P) must still parse via the SaveGameInfo magic anchor.
+    parsed = parse_character_sheet(extract_character_sheet(_patched(3, ord("P"))))
+    assert parsed.player_name == "Player1"
 
 
 def test_rejects_non_shar_game():

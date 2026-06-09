@@ -87,6 +87,24 @@ def test_gag_names_count_matches_totals():
     assert sum(names.GAGS_PER_LEVEL) == 84
 
 
+def test_vehicles_and_outfits_named_per_item():
+    early = _result("sample_early.gci")
+    by = {c.key: c for c in early.categories}
+    veh, out = by["vehicles"], by["outfits"]
+    assert veh.named and out.named
+    assert (veh.total, out.total) == (35, 21)
+    # Early save L1: bonus + street-race reward cars owned (2), no purchased cars; 3 skins.
+    assert (veh.done, out.done) == (2, 3)
+    assert any("Duff Truck (buy)" in m for m in veh.missing)
+    assert any("Lisa's Electaurus" not in m for m in veh.missing)  # L1 race reward is owned
+    assert any("Bart - Tall" in m for m in out.missing)  # L2 outfit missing
+
+    full = _result("complete_100.gci")
+    bf = {c.key: c for c in full.categories}
+    assert bf["vehicles"].done == 35
+    assert bf["outfits"].done == 21
+
+
 def test_missing_items_use_canonical_names_not_save_placeholders():
     result = _result("sample_early.gci")
     cards = next(c for c in result.categories if c.key == "cards")

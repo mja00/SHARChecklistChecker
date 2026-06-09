@@ -124,6 +124,48 @@ def _cars_unlocked(level: Level) -> int:
     )
 
 
+def _vehicles_category(levels: list[Level]) -> CategoryResult:
+    """Per-item vehicles: the 3 purchasable cars (PurchasedRewards[0..2]) plus the bonus-
+    mission and street-race reward cars, named from the reward/car scripts."""
+    done = 0
+    total = 0
+    missing: list[str] = []
+    for lvl, level in enumerate(levels):
+        label = names.LEVEL_LABELS[lvl]
+        for i, name in enumerate(names.VEHICLE_FORSALE[lvl]):
+            total += 1
+            if level.purchased_rewards[i]:
+                done += 1
+            else:
+                missing.append(f"{label} - {name} (buy)")
+        total += 1
+        if level.bonus_mission.completed:
+            done += 1
+        else:
+            missing.append(f"{label} - {names.VEHICLE_BONUS[lvl]} (bonus mission reward)")
+        total += 1
+        if _all_street_races_done(level):
+            done += 1
+        else:
+            missing.append(f"{label} - {names.VEHICLE_STREETRACE[lvl]} (street race reward)")
+    return CategoryResult("vehicles", "Vehicles", done, total, named=True, missing=missing)
+
+
+def _outfits_category(levels: list[Level]) -> CategoryResult:
+    """Per-item outfits: the 3 purchasable skins per level (PurchasedRewards[3..5])."""
+    done = 0
+    total = 0
+    missing: list[str] = []
+    for lvl, level in enumerate(levels):
+        for i, name in enumerate(names.OUTFIT_NAMES[lvl]):
+            total += 1
+            if level.purchased_rewards[3 + i]:
+                done += 1
+            else:
+                missing.append(f"{names.LEVEL_LABELS[lvl]} - {name}")
+    return CategoryResult("outfits", "Outfits", done, total, named=True, missing=missing)
+
+
 def _story_missions_done(level: Level, lvl: int) -> int:
     """Completed story missions (M1-M7). Only Level 1 has the M0 tutorial at slot 0."""
     offset = 1 if lvl == 0 else 0
@@ -223,20 +265,8 @@ def compute_checklist(save: SaveData) -> ChecklistResult:
             is_done=lambda level, slot, lvl: bool(level.gag_mask & (1 << slot)),
             name_for=lambda lvl: names.GAG_NAMES[lvl],
         ),
-        _count_category(
-            "outfits",
-            "Outfits",
-            levels,
-            names.OUTFITS_PER_LEVEL,
-            value_for=lambda level: level.num_skins_purchased,
-        ),
-        _count_category(
-            "vehicles",
-            "Vehicles",
-            levels,
-            [names.CARS_PER_LEVEL] * names.NUM_LEVELS,
-            value_for=_cars_unlocked,
-        ),
+        _outfits_category(levels),
+        _vehicles_category(levels),
     ]
     return ChecklistResult(
         player_name=save.player_name,

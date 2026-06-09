@@ -293,6 +293,49 @@ OUTFITS_PER_LEVEL = [3] * 7  # 21 total
 # not the global CarInventory count. (Source: charactersheetmanager.cpp.)
 CARS_PER_LEVEL = 5
 
+# Per-level vehicle names, from rewards.mfk (which car fills each role) + the car .con
+# script comments (the display names). The three "for sale" cars map 1:1 to the save's
+# PurchasedRewards[0..2] bits; the bonus/street-race reward cars are owned once the
+# bonus mission / all street races are done.
+VEHICLE_FORSALE = [  # PurchasedRewards[0], [1], [2]
+    ["Barney's Plow King", "Duff Truck", "Surveillance Van"],
+    ["Homer's Mr. Plow", "Chase Limo", "Fire Truck"],
+    ["Otto's School Bus", "Donut Truck", "Nerd Car"],
+    ["Willie's Tractor", "Krusty's Limo", "Curator's Car"],
+    ["The Car Built For Homer", "Wiggum's Police Car", "Cola Truck"],
+    ["Globex Super Villain Car", "Armored Truck", "Chase Sedan"],
+    ["Zombie Speed Buggy", "Hover Bike", "Flame Hearse"],
+]
+VEHICLE_BONUS = [  # owned once the level's bonus mission is complete
+    "Cletus' Pickup Truck",
+    "Gramps' WWII Jeep",
+    "Skinner's Sedan",
+    "Comic Book Guy's Gremlin",
+    "Frink's Hovercar",
+    "Snake's Lil' Bandit",
+    "Mr. Burns' Limo (with Smithers)",
+]
+VEHICLE_STREETRACE = [  # owned once all three street races are won
+    "Lisa's Electaurus",
+    "Moe's Sedan",
+    "Lovejoy's Book Burning Van",
+    "Krusty's Clown Car",
+    "Bumblebee Man's El Camino",
+    "Burns' '36 Stutz Bearcat",
+    "Open Wheel Race Car",
+]
+
+# Per-level outfit/skin names, in PurchasedRewards[3..5] order (from rewards.mfk).
+OUTFIT_NAMES = [
+    ["Homer - Casual", "Homer - Muumuu", "Homer - Chosen One"],
+    ["Bart - Tall", "Bart - Football", "Bart - Ninja"],
+    ["Lisa - Cool", "Lisa - Florida", "Lisa - Hockey"],
+    ["Marge - Inmate", "Marge - Classy", "Marge - Police"],
+    ["Apu - Army", "Apu - American", "Apu - Be Sharps"],
+    ["Bart - Hugo", "Bart - Cadet", "Bartman"],
+    ["Homer - Dirty", "Homer - Evil", "Homer - Donut"],
+]
+
 # Fixed per-level counts for named categories.
 STORY_MISSIONS_PER_LEVEL = 7  # 49 total (the L1 tutorial is excluded from this count)
 STREET_RACES_PER_LEVEL = 3  # 21 total

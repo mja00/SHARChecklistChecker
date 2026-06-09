@@ -48,8 +48,8 @@ Category keys: `cards`, `story_missions`, `bonus_missions`, `street_races`, `mov
 | Movies (FMVs) | 7 | by level |
 | Wasp cameras | 140 | by index |
 | Gags | 84 | by name |
-| Outfits | 21 | count only |
-| Vehicles | 35 | count only |
+| Outfits | 21 | by name |
+| Vehicles | 35 | by name |
 
 The headline completion percentage replicates the game's own `QueryPercentGameCompleted`
 (each level is 8 equally-weighted categories; levels are 99% of the total and the Level 3
@@ -60,19 +60,22 @@ completion definition.
 
 ## Scope and notes
 
-- **GameCube `.gci` (NTSC-U / `GHQE`) only** for v1. PAL/JP saves are rejected with a clear
-  message; the parser core is format-agnostic so other platforms can be added later.
+- **GameCube `.gci` only.** All GameCube regions (`GHQE` NTSC-U, `GHQP` PAL, `GHQJ` NTSC-J)
+  share the same save layout, so any GameCube SHAR save is accepted; the payload is located
+  by the `SaveGameInfo` magic header, which absorbs region-specific banner/icon sizes. PAL/JP
+  support is based on the game source but has only been tested against NTSC-U saves.
 - The save stores only generic placeholder names (`Cardx`, `m0`, …), so display names come
-  from a canonical table in `shar_checklist/names.py` — edit that file to fix a name or
+  from canonical tables in `shar_checklist/names.py` — edit that file to fix a name or
   adjust a total.
-- Cards, missions, races, movies, **gags**, and **wasp cameras** are reported per item.
-  Gags use the save's `GagMask` bitmask, named from each level's `level.mfk` script (the
-  game assigns gag bit `N` to the `N`-th persistent gag defined in the script). Wasp cameras
-  use the per-object destruction state in `PersistentObjectStates` (the same data that stops
-  them respawning on load), labelled by 1-based index since they have no script names.
-- Outfits are count-only per level (`NumSkinsPurchased`). Vehicles use the game's own
-  per-level metric — purchased cars + the bonus-mission reward + the street-race reward,
-  5 per level (35 total) — not the raw global car inventory.
+- Every category is reported **per item**. Cards, missions, bonus missions, and movies come
+  from curated tables (verified against the game's `cards.h` / text bible / mission scripts).
+  Gags use the `GagMask` bitmask, named from each level's `level.mfk` (gag bit `N` = the
+  `N`-th persistent gag in the script). Vehicles and outfits use the `PurchasedRewards` bits
+  (`[0..2]` = the 3 purchasable cars, `[3..5]` = the 3 skins) plus the bonus/street-race
+  reward cars, named from `rewards.mfk` + the car `.con` scripts. Wasp cameras use the
+  `PersistentObjectStates` destruction bits, labelled by 1-based index (no script names).
+- Vehicles use the game's own per-level completion metric (3 purchasable + bonus reward +
+  street-race reward = 5 per level, 35 total), not the raw global car inventory.
 - **Cola crates / vending machines are not tracked.** They are generic "object breakables"
   recorded in `PersistentObjectStates` by *load order* (the game's `PersistentWorldManager`
   stores no object type or ID — its own code resorts to sniffing the break sound to guess
